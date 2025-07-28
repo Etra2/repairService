@@ -12,6 +12,9 @@ public class RepairRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String trackingId;
+
     private String deviceSerialNumber;
 
     @Column (columnDefinition = "TEXT")
@@ -38,8 +41,9 @@ public class RepairRequest {
     public RepairRequest() {
     }
 
-    public RepairRequest(Long id, String deviceSerialNumber, String description, String status, LocalDateTime createdAt, User customer, DeviceModel model, RepairReport report, List<UploadedFile> uploadedFiles) {
+    public RepairRequest(Long id, String trackingId, String deviceSerialNumber, String description, String status, LocalDateTime createdAt, User customer, DeviceModel model, RepairReport report, List<UploadedFile> uploadedFiles) {
         this.id = id;
+        this.trackingId = trackingId;
         this.deviceSerialNumber = deviceSerialNumber;
         this.description = description;
         this.status = status;
@@ -56,6 +60,14 @@ public class RepairRequest {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTrackingId() {
+        return trackingId;
+    }
+
+    public void setTrackingId(String trackingId) {
+        this.trackingId = trackingId;
     }
 
     public String getDeviceSerialNumber() {
