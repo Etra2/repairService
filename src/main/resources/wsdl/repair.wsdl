@@ -1,0 +1,42 @@
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://repair_service.com/repair"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             targetNamespace="http://repair_service.com/repair"
+             name="RepairService">
+
+    <types>
+        <xsd:schema>
+            <xsd:import namespace="http://repair_service.com/repair" schemaLocation="repair_request.xsd"/>
+        </xsd:schema>
+    </types>
+
+    <message name="CreateRepairRequestRequest">
+        <part name="parameters" element="tns:CreateRepairRequestRequest"/>
+    </message>
+    <message name="CreateRepairRequestResponse">
+        <part name="parameters" element="tns:CreateRepairRequestResponse"/>
+    </message>
+
+    <portType name="RepairPort">
+        <operation name="createRepairRequest">
+            <input message="tns:CreateRepairRequestRequest"/>
+            <output message="tns:CreateRepairRequestResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="RepairBinding" type="tns:RepairPort">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="createRepairRequest">
+            <soap:operation soapAction=""/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <service name="RepairService">
+        <port name="RepairPort" binding="tns:RepairBinding">
+            <soap:address location="http://localhost:8080/ws"/>
+        </port>
+    </service>
+</definitions>
