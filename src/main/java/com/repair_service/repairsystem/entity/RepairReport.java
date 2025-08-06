@@ -26,6 +26,7 @@ public class RepairReport {
     // data zakończenia naprawy
     private LocalDateTime repairedAt = LocalDateTime.now();
 
+
     @OneToOne
     @JoinColumn(name = "repair_id", unique = true)
     private RepairRequest repairRequest;
