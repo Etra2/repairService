@@ -5,9 +5,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-//zarządzanie dostępem do danych encji User
-public interface UserRepository extends JpaRepository<User, Long>{
+/**
+ * Zarządzanie dostępem do danych encji User
+ */
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    // szukanie użytkownika po email, optional bo user o tym email może nie istnieć
+    /**
+     * Szukanie użytkownika po emailu.
+     * Zwraca Optional<User>, ponieważ użytkownik o tym emailu może nie istnieć.
+     */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Sprawdzenie, czy istnieje użytkownik o podanym emailu.
+     */
+    boolean existsByEmail(String email);
 }

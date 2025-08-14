@@ -8,52 +8,54 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 
-// klasa narzędziowa - generowanie i weryfikacja tokenów JWT
+//Klasa narzędziowa - generowanie i weryfikacja tokenów JWT
 
 @Component
 public class JwtUtils {
 
-    // sekret do podpisywania JWT
+    // Sekret do podpisywania JWT (w application.properties!)
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    // czas ważności tokenu w milisekundach
+    // Czas ważności tokenu w milisekundach
     @Value("${app.jwt.expiration-ms}")
     private long jwtExpirationMs;
 
-    // tworzenie tokenu JWT na podstawie nazwy użytkownika
+    // Generowanie tokenu JWT na podstawie nazwy użytkownika
     public String generateJwtToken(String username) {
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         return Jwts.builder()
-                .setSubject(username) // wlaściciel tokenu
-                .setIssuedAt(new Date()) // data wygenerowania
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)) // ważność
-                .signWith(key, SignatureAlgorithm.HS256) // podpisanie
+                .setSubject(username) // Właściciel tokenu
+                .setIssuedAt(new Date()) // Data wygenerowania
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)) // Ważność
+                .signWith(key, SignatureAlgorithm.HS256) // Podpisanie
                 .compact();
     }
 
-    // pobieranie loginu (email) z tokenu JWT
-    public String getUserNameFormToken(String token) {
+    // Pobieranie loginu (email) z tokenu JWT
+
+    public String getUserNameFromJwtToken(String token) {
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         return Jwts.parserBuilder()
-                .setSigningKey(key) // klucz weryfikacji podpisu
+                .setSigningKey(key) // Klucz do weryfikacji podpisu
                 .build()
-                .parseClaimsJwt(token) // parsowanie tokenu
+                .parseClaimsJws(token) // Parsowanie podpisanego tokenu
                 .getBody()
-                .getSubject(); // zwracanie loginu
+                .getSubject(); // Zwracanie loginu
     }
 
-    //sprawdzanie poprawności tokeniu - podpis + data ważności
+    //Sprawdzanie poprawności tokenu - podpis + data ważności
+
     public boolean validateJwtToken(String authToken) {
-        try{
+        try {
             Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJwt(authToken);
-            return true; // token ok
+                    .parseClaimsJws(authToken); // Sprawdza podpis i datę ważności
+            return true; // Token OK
         } catch (JwtException e) {
-            // jezeli token jest uskodzony, wygasł lub ma zły podpis - błąd
+            // Token uszkodzony, wygasł lub ma zły podpis
             return false;
         }
     }

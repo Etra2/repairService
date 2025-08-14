@@ -1,6 +1,5 @@
 package com.repair_service.repairsystem.controller.rest;
 
-import com.repair_service.repairsystem.entity.RepairReport;
 import com.repair_service.repairsystem.entity.RepairRequest;
 import com.repair_service.repairsystem.repository.RepairReportRepository;
 import com.repair_service.repairsystem.repository.RepairRequestRepository;
@@ -57,5 +56,6 @@ public class RepairImageController {
         repairRequestRepository.save(request);
 
         return ResponseEntity.ok("Zdjęcia zostały zapisane.");
+
     }
 }

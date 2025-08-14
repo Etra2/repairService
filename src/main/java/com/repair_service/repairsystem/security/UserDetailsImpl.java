@@ -8,15 +8,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-// Adapter, który pozwala Spring Security traktować encję User
-// jako obiekt UserDetails (wymagany przez mechanizmy autoryzacji)
-
+/*Implementacja UserDetails – Spring Security używa tej klasy
+ do przechowywania danych o zalogowanym użytkowniku.
+ */
 public class UserDetailsImpl implements UserDetails {
 
-    private final Long id; // identyfikator użytkownika
-    private final String email; // login użytkownika (email)
-    private final String password; // hasło użytkownika
-    private final Collection<? extends GrantedAuthority> authorities; // role użytkownika
+    private final Long id;
+    private final String email;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -25,12 +25,12 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    // Tworzy obiekt UserDetailsImpl z encji User
+    // Metoda tworzy obiekt UserDetailsImpl na podstawie encji User z bazy.
+
     public static UserDetailsImpl build(User user) {
-        // Tworzy listę ról (GrantedAuthority)
-        List<GrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority(user.getRole()) // zakładam, że getRole() zwraca np. "ROLE_CLIENT"
-        );
+        // Tworzymy listę ról na podstawie pola "role" (np. "ROLE_CLIENT")
+        List<GrantedAuthority> authorities =
+                List.of(new SimpleGrantedAuthority(user.getRole()));
 
         return new UserDetailsImpl(
                 user.getId(),
@@ -54,7 +54,6 @@ public class UserDetailsImpl implements UserDetails {
         return password;
     }
 
-    // !!! w Spring Security metoda to getUsername(), nie getEmail()
     @Override
     public String getUsername() {
         return email;
@@ -62,21 +61,21 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return true; // Konto zawsze aktywne
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return true; // Konto nigdy nie jest zablokowane
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return true; // Hasło zawsze ważne
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return true; // Konto zawsze aktywne
     }
 }
