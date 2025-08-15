@@ -4,9 +4,12 @@ import com.repair_service.repairsystem.entity.RepairRequest;
 
 public interface RepairRequestService {
 
-    // tworzenie nowego zgłoszenia naprawy
+    // Tworzenie nowego zgłoszenia naprawy
     RepairRequest createRepairRequest(RepairRequest request);
 
-    //pobieranie po trackingId - później moze
+    // Pobieranie zgłoszenia po trackingId
     RepairRequest getRequestByTrackingId(String trackingId);
+
+    // Zakończenie naprawy i wysłanie powiadomienia e-mail
+    RepairRequest completeRepair(Long requestId);
 }
