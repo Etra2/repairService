@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zgłoszenie naprawy</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+<body>
+<div class="container">
+    <h2>Nowe zgłoszenie</h2>
+    <input type="text" id="device" placeholder="Model urządzenia">
+    <textarea id="description" placeholder="Opis usterki"></textarea>
+    <input type="file" id="images" multiple>
+    <button onclick="createRepairRequest()">Wyślij zgłoszenie</button>
+</div>
+</body>
+</html>

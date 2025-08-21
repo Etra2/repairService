@@ -1,0 +1,79 @@
+# repair.graphqls
+
+# -----------------------------------
+# Typy danych
+# -----------------------------------
+
+type RepairRequest {
+    id: ID!
+    trackingId: String!
+    deviceSerialNumber: String
+    description: String
+    imagePath1: String
+    imagePath2: String
+    imagePath3: String
+    status: String
+    createdAt: String
+    customer: User
+    model: DeviceModel
+    report: RepairReport
+    uploadedFiles: [UploadedFile]
+}
+
+type User {
+    id: ID!
+    fullName: String
+    email: String
+    role: String
+}
+
+type DeviceModel {
+    id: ID!
+    name: String
+    brand: String
+}
+
+type RepairReport {
+    id: ID!
+    details: String
+    repairRequest: RepairRequest
+}
+
+type UploadedFile {
+    id: ID!
+    fileName: String
+    filePath: String
+    repairRequest: RepairRequest
+}
+
+# -----------------------------------
+# Zapytania (queries)
+# -----------------------------------
+
+type Query {
+    getAllRepairRequests: [RepairRequest]
+    getRepairRequestById(id: ID!): RepairRequest
+    getRepairRequestsByCustomer(customerId: ID!): [RepairRequest]
+}
+
+# -----------------------------------
+# Mutacje (mutations)
+# -----------------------------------
+
+input RepairRequestInput {
+    trackingId: String!
+    deviceSerialNumber: String
+    description: String
+    imagePath1: String
+    imagePath2: String
+    imagePath3: String
+    status: String
+    customerId: ID!
+    modelId: ID!
+}
+
+type Mutation {
+    createRepairRequest(input: RepairRequestInput!): RepairRequest
+    updateRepairRequestStatus(id: ID!, status: String!): RepairRequest
+    deleteRepairRequest(id: ID!): Boolean
+}

@@ -1,4 +1,4 @@
-package com.repair_service.repairsystem.dto;
+package com.repair_service.repairsystem.dto.auth;
 
 // dto do rejestracji użytkownika - przesyłanie z frontu do rest api
 public class AuthRequestDto {

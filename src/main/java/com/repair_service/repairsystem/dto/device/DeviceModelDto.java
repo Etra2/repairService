@@ -1,17 +1,17 @@
-package com.repair_service.repairsystem.dto;
+package com.repair_service.repairsystem.dto.device;
 
 import java.util.List;
 
-public class DeviceModeDto {
+public class DeviceModelDto {
     private Long id;
     private String manufacturer;
     private String modelName;
     private String category;
     private List<Long> repairRequestIds;
 
-    public DeviceModeDto() {}
+    public DeviceModelDto() {}
 
-    public DeviceModeDto(Long id, String manufacturer, String modelName, String category, List<Long> repairRequestIds) {
+    public DeviceModelDto(Long id, String manufacturer, String modelName, String category, List<Long> repairRequestIds) {
         this.id = id;
         this.manufacturer = manufacturer;
         this.modelName = modelName;

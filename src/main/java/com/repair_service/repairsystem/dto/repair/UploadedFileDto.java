@@ -1,4 +1,4 @@
-package com.repair_service.repairsystem.dto;
+package com.repair_service.repairsystem.dto.repair;
 
 import java.time.LocalDateTime;
 

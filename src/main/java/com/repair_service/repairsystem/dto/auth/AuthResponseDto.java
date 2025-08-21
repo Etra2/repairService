@@ -1,4 +1,4 @@
-package com.repair_service.repairsystem.dto;
+package com.repair_service.repairsystem.dto.auth;
 
 // dto zwracany po zalogowaniu/ rejestracji - zawiera token JWT
 public class AuthResponseDto {

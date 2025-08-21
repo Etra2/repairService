@@ -1,4 +1,4 @@
-package com.repair_service.repairsystem.dto;
+package com.repair_service.repairsystem.dto.user;
 
 // dto do rejestracji i edycji użytkownika
 public class UserRequestDto {
