@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Logowanie</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+<body>
+<div class="container">
+    <h2>Logowanie</h2>
+    <div id="login-form">
+        <input type="email" id="login-email" placeholder="Email">
+        <input type="password" id="login-password" placeholder="Hasło">
+        <button onclick="login()">Zaloguj</button>
+        <p><a href="#" onclick="toggleForms()">Nie masz konta? Zarejestruj się</a></p>
+    </div>
+
+    <div id="register-form" class="hidden">
+        <input type="text" id="reg-fullName" placeholder="Imię i nazwisko">
+        <input type="email" id="reg-email" placeholder="Email">
+        <input type="password" id="reg-password" placeholder="Hasło">
+        <button onclick="register()">Zarejestruj</button>
+        <p><a href="#" onclick="toggleForms()">Masz konto? Zaloguj się</a></p>
+    </div>
+</div>
+</body>
+</html>

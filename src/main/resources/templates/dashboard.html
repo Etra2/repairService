@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel użytkownika</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+<body>
+<div class="container">
+    <h2>Panel</h2>
+    <button onclick="logout()">🚪 Wyloguj</button>
+
+    <!-- CLIENT VIEW -->
+    <div id="client-view" class="hidden">
+        <h3>Witaj Kliencie!</h3>
+        <p><a href="/repair_form.html">📌 Zgłoś naprawę</a></p>
+        <p><a href="/repair_status.html">🔎 Sprawdź status naprawy</a></p>
+    </div>
+
+    <!-- TECHNICIAN VIEW -->
+    <div id="technician-view" class="hidden">
+        <h3>Witaj Techniku!</h3>
+        <div id="repairs-list"></div>
+    </div>
+</div>
+</body>
+</html>
