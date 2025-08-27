@@ -48,20 +48,21 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Zezwalamy na dostęp do stron Thymeleaf, CSS/JS i endpointów logowania/rejestracji
                         .requestMatchers(
-                                "/",
-                                "/index",
-                                "/dashboard.html",
-                                "/repair_form.html",
-                                "/repair_status.html",
-                                "/style.css",         // <-- tu
-                                "/script.js",         // <-- tu
+                                "/",               // Strona główna
+                                "/index",          // Strona logowania
+                                "/dashboard",      // Dashboard
+                                "/repair-form",    // Formularz dodania zgłoszenia
+                                "/repair-status",  // Status zgłoszenia
+                                "/style.css",
+                                "/script.js",
                                 "/css/**",
                                 "/js/**",
-                                "/api/auth/**"
+                                "/api/auth/**"     // Logowanie i rejestracja
                         ).permitAll()
-                        // Wszystkie inne endpointy wymagają JWT
+                        // Wszystkie pozostałe endpointy wymagają JWT
                         .anyRequest().authenticated()
                 )
+                // Dodajemy filtr JWT **po wykluczeniu Thymeleaf i publicznych endpointów**
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

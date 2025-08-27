@@ -8,7 +8,7 @@ async function login() {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
-    // Pełny URL backendu, aby fetch działał niezależnie od portu frontendu
+    // Pełny URL backendu
     const response = await fetch("http://localhost:8082/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -24,11 +24,11 @@ async function login() {
         localStorage.setItem("userId", data.user.id);
         localStorage.setItem("email", data.user.email);
 
-        // przekierowanie do dashboard
-        window.location.href = "/dashboard.html";
+        // przekierowanie do dashboard przez endpoint kontrolera
+        window.location.href = "/dashboard";
     } else {
         const error = await response.json();
-        alert(" Błąd logowania: " + (error.message || "Nieznany błąd"));
+        alert("Błąd logowania: " + (error.message || "Nieznany błąd"));
     }
 }
 
@@ -56,7 +56,7 @@ async function register() {
 
 function logout() {
     localStorage.clear();
-    window.location.href = "/index.html";
+    window.location.href = "/"; // przekierowanie do strony startowej
 }
 
 // ================== CLIENT ==================
@@ -96,7 +96,7 @@ async function createRepairRequest() {
     }
 
     alert("Zgłoszenie zostało wysłane!");
-    window.location.href = "/dashboard.html";
+    window.location.href = "/dashboard";
 }
 
 async function checkStatus() {
