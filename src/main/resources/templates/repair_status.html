@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Status naprawy</title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="/script.js" defer></script>
+    <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <div class="container">
@@ -13,5 +12,6 @@
     <button onclick="checkStatus()">Sprawdź</button>
     <div id="statusResult"></div>
 </div>
+<script th:src="@{/script.js}"></script>
 </body>
 </html>

@@ -1,28 +1,30 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Logowanie</title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="/script.js" defer></script>
+    <link rel="icon" href="data:,">
+    <title>Repair System - Logowanie / Rejestracja</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <div class="container">
-    <h2>Logowanie</h2>
     <div id="login-form">
-        <input type="email" id="login-email" placeholder="Email">
-        <input type="password" id="login-password" placeholder="Hasło">
-        <button onclick="login()">Zaloguj</button>
-        <p><a href="#" onclick="toggleForms()">Nie masz konta? Zarejestruj się</a></p>
+        <h2>Logowanie</h2>
+        <input type="email" id="login-email" placeholder="Email"><br>
+        <input type="password" id="login-password" placeholder="Hasło"><br>
+        <button type="button" onclick="login()">Zaloguj</button>
+        <p>Nie masz konta? <a href="#" onclick="toggleForms()">Zarejestruj się</a></p>
     </div>
 
     <div id="register-form" class="hidden">
-        <input type="text" id="reg-fullName" placeholder="Imię i nazwisko">
-        <input type="email" id="reg-email" placeholder="Email">
-        <input type="password" id="reg-password" placeholder="Hasło">
-        <button onclick="register()">Zarejestruj</button>
-        <p><a href="#" onclick="toggleForms()">Masz konto? Zaloguj się</a></p>
+        <h2>Rejestracja</h2>
+        <input type="text" id="reg-fullName" placeholder="Imię i nazwisko"><br>
+        <input type="email" id="reg-email" placeholder="Email"><br>
+        <input type="password" id="reg-password" placeholder="Hasło"><br>
+        <button type="button" onclick="register()">Zarejestruj</button>
+        <p>Masz już konto? <a href="#" onclick="toggleForms()">Zaloguj się</a></p>
     </div>
 </div>
+<script th:src="@{/script.js}"></script>
 </body>
 </html>

@@ -8,7 +8,8 @@ async function login() {
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
 
-    const response = await fetch("/api/auth/login", {
+    // Pełny URL backendu, aby fetch działał niezależnie od portu frontendu
+    const response = await fetch("http://localhost:8082/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -16,12 +17,18 @@ async function login() {
 
     if (response.ok) {
         const data = await response.json();
+
+        // zapisujemy token i dane użytkownika w localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.user.role);
         localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("email", data.user.email);
+
+        // przekierowanie do dashboard
         window.location.href = "/dashboard.html";
     } else {
-        alert("❌ Błąd logowania");
+        const error = await response.json();
+        alert(" Błąd logowania: " + (error.message || "Nieznany błąd"));
     }
 }
 
@@ -30,17 +37,20 @@ async function register() {
     const email = document.getElementById("reg-email").value;
     const password = document.getElementById("reg-password").value;
 
-    const response = await fetch("/api/users", {
+    // Pełny URL backendu
+    const response = await fetch("http://localhost:8082/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fullName, email, password, role: "ROLE_CLIENT" })
     });
 
     if (response.ok) {
-        alert("✅ Rejestracja zakończona, zaloguj się!");
+        const data = await response.json();
+        alert(data.message || "Rejestracja zakończona, zaloguj się!");
         toggleForms();
     } else {
-        alert("❌ Błąd rejestracji");
+        const error = await response.json();
+        alert("Błąd rejestracji: " + (error.message || "Nieznany błąd"));
     }
 }
 
@@ -56,7 +66,7 @@ async function createRepairRequest() {
     const description = document.getElementById("description").value;
     const files = document.getElementById("images").files;
 
-    const response = await fetch("/api/repairs", {
+    const response = await fetch("http://localhost:8082/api/repairs", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -66,27 +76,26 @@ async function createRepairRequest() {
     });
 
     if (!response.ok) {
-        alert("❌ Błąd przy tworzeniu zgłoszenia");
+        alert("Błąd przy tworzeniu zgłoszenia");
         return;
     }
 
     const repair = await response.json();
 
-    // Upload max 3 zdjęć
     if (files.length > 0) {
         const formData = new FormData();
         for (let i = 0; i < files.length && i < 3; i++) {
             formData.append("images", files[i]);
         }
 
-        await fetch(`/api/repairs/${repair.id}/upload-images`, {
+        await fetch(`http://localhost:8082/api/repairs/${repair.id}/upload-images`, {
             method: "POST",
             headers: { "Authorization": `Bearer ${token}` },
             body: formData
         });
     }
 
-    alert("✅ Zgłoszenie zostało wysłane!");
+    alert("Zgłoszenie zostało wysłane!");
     window.location.href = "/dashboard.html";
 }
 
@@ -94,7 +103,7 @@ async function checkStatus() {
     const id = document.getElementById("repairId").value;
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`/api/repairs/${id}`, {
+    const response = await fetch(`http://localhost:8082/api/repairs/${id}`, {
         headers: { "Authorization": `Bearer ${token}` }
     });
 
@@ -109,14 +118,14 @@ async function checkStatus() {
 
         document.getElementById("statusResult").innerHTML = html;
     } else {
-        alert("❌ Nie znaleziono zgłoszenia.");
+        alert("Nie znaleziono zgłoszenia.");
     }
 }
 
 async function downloadReport(reportId) {
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`/api/reports/${reportId}/pdf`, {
+    const response = await fetch(`http://localhost:8082/api/reports/${reportId}/pdf`, {
         headers: { "Authorization": `Bearer ${token}` }
     });
 
@@ -130,7 +139,7 @@ async function downloadReport(reportId) {
         a.click();
         a.remove();
     } else {
-        alert("❌ Nie udało się pobrać raportu.");
+        alert("Nie udało się pobrać raportu.");
     }
 }
 
@@ -138,7 +147,7 @@ async function downloadReport(reportId) {
 async function loadRepairsForTechnician() {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("/api/repairs", {
+    const response = await fetch("http://localhost:8082/api/repairs", {
         headers: { "Authorization": `Bearer ${token}` }
     });
 
@@ -161,14 +170,14 @@ async function loadRepairsForTechnician() {
             list.appendChild(item);
         });
     } else {
-        alert("❌ Błąd przy pobieraniu zgłoszeń.");
+        alert("Błąd przy pobieraniu zgłoszeń.");
     }
 }
 
 async function updateRepairStatus(id, status) {
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`/api/repairs/${id}/status`, {
+    const response = await fetch(`http://localhost:8082/api/repairs/${id}/status`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -178,10 +187,10 @@ async function updateRepairStatus(id, status) {
     });
 
     if (response.ok) {
-        alert("✅ Status został zaktualizowany");
+        alert("Status został zaktualizowany");
         loadRepairsForTechnician();
     } else {
-        alert("❌ Błąd przy aktualizacji statusu");
+        alert("Błąd przy aktualizacji statusu");
     }
 }
 

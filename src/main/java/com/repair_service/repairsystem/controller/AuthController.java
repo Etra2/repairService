@@ -1,17 +1,23 @@
 package com.repair_service.repairsystem.controller;
 
+import com.repair_service.repairsystem.dto.auth.AuthRequestDto;
 import com.repair_service.repairsystem.dto.LoginRequestDto;
 import com.repair_service.repairsystem.entity.User;
 import com.repair_service.repairsystem.repository.UserRepository;
+import com.repair_service.repairsystem.security.UserDetailsImpl;
 import com.repair_service.repairsystem.security.jwt.JwtUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,14 +35,11 @@ public class AuthController {
     @Autowired
     private JwtUtils jwtUtils;
 
-    /**
-     * 🔐 Logowanie użytkownika
-     * Przyjmuje LoginRequestDto (email + hasło), uwierzytelnia użytkownika
-     * i zwraca token JWT.
-     */
+    // ==================== LOGIN ====================
     @PostMapping("/login")
-    public String authenticateUser(@Valid @RequestBody LoginRequestDto loginRequest) {
-        // Tworzymy obiekt Authentication na podstawie emaila i hasła
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDto loginRequest) {
+
+        // Uwierzytelnienie użytkownika w Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -44,30 +47,50 @@ public class AuthController {
                 )
         );
 
-        // Ustawiamy użytkownika jako zalogowanego w kontekście Security
+        // Zapisanie kontekstu bezpieczeństwa
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Generujemy token JWT na podstawie emaila (username)
-        String jwt = jwtUtils.generateJwtToken(authentication.getName());
+        // Wygenerowanie tokena JWT
+        String jwt = jwtUtils.generateJwtToken(loginRequest.getEmail());
 
-        return jwt; // Zwracamy token
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        // Tworzymy mapę z tokenem i danymi użytkownika
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", jwt);
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("id", userDetails.getId());
+        userData.put("email", userDetails.getEmail());
+        userData.put("role", userDetails.getRole());
+
+        response.put("user", userData);
+
+        return ResponseEntity.ok(response);
     }
 
-    /**
-     * 📝 Rejestracja nowego użytkownika
-     * Przyjmuje encję User w JSON (email, hasło, fullName, role),
-     * sprawdza czy email jest wolny i zapisuje użytkownika do bazy.
-     */
+    // ==================== REGISTER ====================
     @PostMapping("/register")
-    public String registerUser(@Valid @RequestBody User signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody AuthRequestDto signUpRequest) {
+        // Sprawdzenie, czy email już istnieje w bazie
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return "Błąd: Email jest już zajęty!";
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Błąd: Email jest już zajęty!");
+            return ResponseEntity.badRequest().body(error);
         }
 
-        // Hasło musi być zakodowane przed zapisaniem w bazie
-        signUpRequest.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        userRepository.save(signUpRequest);
+        // Tworzymy nowego użytkownika z danych z DTO
+        User user = new User();
+        user.setFullName(signUpRequest.getFullName());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword())); // hashujemy hasło
+        user.setRole("ROLE_CLIENT"); // nadajemy rolę klienta domyślnie
 
-        return "✅ Użytkownik zarejestrowany pomyślnie!";
+        // Zapis do bazy
+        userRepository.save(user);
+
+        Map<String, String> success = new HashMap<>();
+        success.put("message", "Użytkownik zarejestrowany pomyślnie!");
+        return ResponseEntity.ok(success);
     }
 }

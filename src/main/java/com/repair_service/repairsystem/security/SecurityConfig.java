@@ -25,29 +25,42 @@ public class SecurityConfig {
         this.jwtUtils = jwtUtils;
     }
 
-    // Kodowanie haseł za pomocą BCrypt
+    // Kodowanie haseł
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Manager odpowiedzialny za uwierzytelnianie użytkowników
+    // Manager do uwierzytelniania
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    // Główna konfiguracja zabezpieczeń Spring Security
+    // Konfiguracja zabezpieczeń
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService);
 
         http
-                .csrf(csrf -> csrf.disable()) // wyłącz CSRF (dla REST API)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // brak sesji
+                .csrf(csrf -> csrf.disable())  // Wyłącz CSRF dla REST/SPA
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // rejestracja i logowanie dostępne bez JWT
-                        .anyRequest().authenticated() // reszta endpointów wymaga JWT
+                        // Zezwalamy na dostęp do stron Thymeleaf, CSS/JS i endpointów logowania/rejestracji
+                        .requestMatchers(
+                                "/",
+                                "/index",
+                                "/dashboard.html",
+                                "/repair_form.html",
+                                "/repair_status.html",
+                                "/style.css",         // <-- tu
+                                "/script.js",         // <-- tu
+                                "/css/**",
+                                "/js/**",
+                                "/api/auth/**"
+                        ).permitAll()
+                        // Wszystkie inne endpointy wymagają JWT
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

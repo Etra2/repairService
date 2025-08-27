@@ -2,51 +2,55 @@ package com.repair_service.repairsystem.security;
 
 import com.repair_service.repairsystem.entity.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
-/*Implementacja UserDetails – Spring Security używa tej klasy
- do przechowywania danych o zalogowanym użytkowniku.
+/**
+ * Implementacja Spring Security UserDetails opakowująca encję User.
  */
 public class UserDetailsImpl implements UserDetails {
 
     private final Long id;
     private final String email;
     private final String password;
-    private final Collection<? extends GrantedAuthority> authorities;
+    private final String role;
 
-    public UserDetailsImpl(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String email, String password, String role) {
         this.id = id;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
+        this.role = role;
     }
 
-    // Metoda tworzy obiekt UserDetailsImpl na podstawie encji User z bazy.
-
+    /** Buduje obiekt UserDetailsImpl na podstawie encji User */
     public static UserDetailsImpl build(User user) {
-        // Tworzymy listę ról na podstawie pola "role" (np. "ROLE_CLIENT")
-        List<GrantedAuthority> authorities =
-                List.of(new SimpleGrantedAuthority(user.getRole()));
-
         return new UserDetailsImpl(
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities
+                user.getRole()
         );
     }
 
+    /** Getter dla ID użytkownika */
     public Long getId() {
         return id;
     }
 
+    /** Getter dla email */
+    public String getEmail() {
+        return email;
+    }
+
+    /** Getter dla roli */
+    public String getRole() {
+        return role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return null; // jeśli nie używasz authorities, można zostawić null
     }
 
     @Override
@@ -56,26 +60,26 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return email; // email używany jako login
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Konto zawsze aktywne
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Konto nigdy nie jest zablokowane
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Hasło zawsze ważne
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Konto zawsze aktywne
+        return true;
     }
 }

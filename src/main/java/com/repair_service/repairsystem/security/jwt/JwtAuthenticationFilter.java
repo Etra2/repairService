@@ -12,16 +12,23 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
- * 🔍 Filtr JWT – sprawdza w każdym żądaniu czy w nagłówku Authorization
- * znajduje się poprawny token. Jeśli tak – ustawia zalogowanego użytkownika
- * w kontekście Spring Security.
+ * 🔍 Filtr JWT – sprawdza nagłówek Authorization: "Bearer <token>".
+ * Omija ścieżki logowania i rejestracji, żeby POST /api/auth/** nie zwracało 403.
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl userDetailsService;
+
+    // Ścieżki do pominięcia
+    private static final List<String> EXCLUDE_URLS = List.of(
+            "/api/auth/login",
+            "/api/auth/register",
+            "/favicon.ico"
+    );
 
     public JwtAuthenticationFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
         this.jwtUtils = jwtUtils;
@@ -33,17 +40,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        // Pomijamy ścieżki logowania/rejestracji
+        String path = request.getServletPath();
+        if (EXCLUDE_URLS.contains(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
-            String jwt = parseJwt(request); // Pobieramy token z nagłówka
+            String jwt = parseJwt(request);
 
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                // Wyciągamy email z tokena
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
-
-                // Pobieramy dane użytkownika z bazy
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // Tworzymy obiekt Authentication i zapisujemy go w SecurityContext
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -51,13 +61,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            System.err.println(" Błąd uwierzytelniania JWT: " + e.getMessage());
+            System.err.println("Błąd uwierzytelniania JWT: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
     }
 
-    // Wyciąganie tokenu z nagłówka Authorization: "Bearer <token>"
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {

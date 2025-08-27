@@ -1,28 +1,27 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Panel użytkownika</title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="/script.js" defer></script>
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
 <div class="container">
-    <h2>Panel</h2>
-    <button onclick="logout()">🚪 Wyloguj</button>
+    <h1>Witaj w panelu!</h1>
 
-    <!-- CLIENT VIEW -->
     <div id="client-view" class="hidden">
-        <h3>Witaj Kliencie!</h3>
-        <p><a href="/repair_form.html">📌 Zgłoś naprawę</a></p>
-        <p><a href="/repair_status.html">🔎 Sprawdź status naprawy</a></p>
+        <p>Panel klienta</p>
+        <a th:href="@{/repair-form}">Dodaj zgłoszenie</a>
+        <a th:href="@{/repair-status}">Sprawdź status naprawy</a>
     </div>
 
-    <!-- TECHNICIAN VIEW -->
     <div id="technician-view" class="hidden">
-        <h3>Witaj Techniku!</h3>
+        <p>Panel technika</p>
         <div id="repairs-list"></div>
     </div>
+
+    <button onclick="logout()">Wyloguj</button>
 </div>
+<script th:src="@{/script.js}"></script>
 </body>
 </html>
