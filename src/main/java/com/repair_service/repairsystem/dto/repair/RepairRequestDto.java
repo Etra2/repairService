@@ -3,7 +3,6 @@ package com.repair_service.repairsystem.dto.repair;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// pełne zgłoszenie naprawy (do wyświetlania).
 public class RepairRequestDto {
     private Long id;
     private String trackingId;
@@ -37,6 +36,8 @@ public class RepairRequestDto {
         this.uploadedFileIds = uploadedFileIds;
     }
 
+    // getters i setters
+
     public Long getId() {
         return id;
     }
@@ -61,20 +62,20 @@ public class RepairRequestDto {
         this.deviceSerialNumber = deviceSerialNumber;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getImagePath1() {
         return imagePath1;
     }
 
     public void setImagePath1(String imagePath1) {
         this.imagePath1 = imagePath1;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getImagePath2() {

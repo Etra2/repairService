@@ -2,39 +2,25 @@ package com.repair_service.repairsystem.dto.repair;
 
 import java.util.List;
 
-// dto do tworzenia zgłoszenia naprawy
 public class RepairRequestCreateDto {
     private String description;
-    private Long deviceModelId;
-    private List<String> imagePaths;
+    private String deviceModelName;
+    private String manufacturer;
+    private String category;
+    private List<String> imagePaths; // opcjonalnie, jeśli planujesz używać
 
-    public RepairRequestCreateDto(String description, Long deviceModelId, List<String> imagePaths) {
-        this.description = description;
-        this.deviceModelId = deviceModelId;
-        this.imagePaths = imagePaths;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDeviceModelName() { return deviceModelName; }
+    public void setDeviceModelName(String deviceModelName) { this.deviceModelName = deviceModelName; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
 
-    public Long getDeviceModelId() {
-        return deviceModelId;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setDeviceModelId(Long deviceModelId) {
-        this.deviceModelId = deviceModelId;
-    }
-
-    public List<String> getImagePaths() {
-        return imagePaths;
-    }
-
-    public void setImagePaths(List<String> imagePaths) {
-        this.imagePaths = imagePaths;
-    }
+    public List<String> getImagePaths() { return imagePaths; }
+    public void setImagePaths(List<String> imagePaths) { this.imagePaths = imagePaths; }
 }

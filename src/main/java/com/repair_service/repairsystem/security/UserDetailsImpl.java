@@ -2,9 +2,11 @@ package com.repair_service.repairsystem.security;
 
 import com.repair_service.repairsystem.entity.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Implementacja Spring Security UserDetails opakowująca encję User.
@@ -33,24 +35,22 @@ public class UserDetailsImpl implements UserDetails {
         );
     }
 
-    /** Getter dla ID użytkownika */
     public Long getId() {
         return id;
     }
 
-    /** Getter dla email */
     public String getEmail() {
         return email;
     }
 
-    /** Getter dla roli */
     public String getRole() {
         return role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null; // jeśli nie używasz authorities, można zostawić null
+        // Ważne: Spring wymaga GrantedAuthority -> tu wrzucamy rolę z DB (np. ROLE_CLIENT)
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     @Override

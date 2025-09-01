@@ -1,5 +1,6 @@
 package com.repair_service.repairsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,10 +18,9 @@ public class RepairRequest {
 
     private String deviceSerialNumber;
 
-    @Column (columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    // ścieżki do zdjęć
     private String imagePath1;
     private String imagePath2;
     private String imagePath3;
@@ -31,6 +31,7 @@ public class RepairRequest {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @JsonIgnore // <-- ignorujemy w JSON, żeby nie było pętli
     private User customer;
 
     @ManyToOne
@@ -41,25 +42,41 @@ public class RepairRequest {
     private RepairReport report;
 
     @OneToMany(mappedBy = "repairRequest", cascade = CascadeType.ALL)
+    @JsonIgnore // <-- ignorujemy w JSON, żeby nie było pętli
     private List<UploadedFile> uploadedFiles;
 
-    public RepairRequest() {
+    // getters i setters
+
+    public String getTrackingId() {
+        return trackingId;
     }
 
-    public RepairRequest(Long id, String trackingId, String deviceSerialNumber, String description, String imagePath1, String imagePath2, String imagePath3, String status, LocalDateTime createdAt, User customer, DeviceModel model, RepairReport report, List<UploadedFile> uploadedFiles) {
-        this.id = id;
+    public void setTrackingId(String trackingId) {
         this.trackingId = trackingId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDeviceSerialNumber() {
+        return deviceSerialNumber;
+    }
+
+    public void setDeviceSerialNumber(String deviceSerialNumber) {
         this.deviceSerialNumber = deviceSerialNumber;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
         this.description = description;
-        this.imagePath1 = imagePath1;
-        this.imagePath2 = imagePath2;
-        this.imagePath3 = imagePath3;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.customer = customer;
-        this.model = model;
-        this.report = report;
-        this.uploadedFiles = uploadedFiles;
     }
 
     public String getImagePath1() {
@@ -84,38 +101,6 @@ public class RepairRequest {
 
     public void setImagePath3(String imagePath3) {
         this.imagePath3 = imagePath3;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTrackingId() {
-        return trackingId;
-    }
-
-    public void setTrackingId(String trackingId) {
-        this.trackingId = trackingId;
-    }
-
-    public String getDeviceSerialNumber() {
-        return deviceSerialNumber;
-    }
-
-    public void setDeviceSerialNumber(String deviceSerialNumber) {
-        this.deviceSerialNumber = deviceSerialNumber;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getStatus() {

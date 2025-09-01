@@ -4,12 +4,15 @@ import com.repair_service.repairsystem.entity.RepairRequest;
 
 public interface RepairRequestService {
 
-    // Tworzenie nowego zgłoszenia naprawy
-    RepairRequest createRepairRequest(RepairRequest request);
+    // Tworzenie nowego zgłoszenia
+    RepairRequest createRepairRequest(RepairRequest repairRequest, String userEmail);
 
-    // Pobieranie zgłoszenia po trackingId
-    RepairRequest getRequestByTrackingId(String trackingId);
+    // Pobranie wszystkich zgłoszeń danego klienta
+    java.util.List<RepairRequest> getRepairsByCustomer(String userEmail);
 
-    // Zakończenie naprawy i wysłanie powiadomienia e-mail
-    RepairRequest completeRepair(Long requestId);
+    // Pobranie zgłoszenia po ID
+    RepairRequest getRepairById(Long id);
+
+    // Aktualizacja statusu naprawy (dla technika)
+    RepairRequest updateRepairStatus(Long id, String status);
 }

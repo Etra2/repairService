@@ -19,43 +19,18 @@ public class DeviceModelDto {
         this.repairRequestIds = repairRequestIds;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
 
-    public String getManufacturer() {
-        return manufacturer;
-    }
+    public String getModelName() { return modelName; }
+    public void setModelName(String modelName) { this.modelName = modelName; }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public List<Long> getRepairRequestIds() {
-        return repairRequestIds;
-    }
-
-    public void setRepairRequestIds(List<Long> repairRequestIds) {
-        this.repairRequestIds = repairRequestIds;
-    }
+    public List<Long> getRepairRequestIds() { return repairRequestIds; }
+    public void setRepairRequestIds(List<Long> repairRequestIds) { this.repairRequestIds = repairRequestIds; }
 }

@@ -1,5 +1,6 @@
 package com.repair_service.repairsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -17,17 +18,8 @@ public class UploadedFile {
 
     @ManyToOne
     @JoinColumn(name = "repair_id")
+    @JsonIgnore // <-- ignorujemy w JSON
     private RepairRequest repairRequest;
-
-    public UploadedFile() {
-    }
-
-    public UploadedFile(Long id, String filePath, LocalDateTime uploadedAt, RepairRequest repairRequest) {
-        this.id = id;
-        this.filePath = filePath;
-        this.uploadedAt = uploadedAt;
-        this.repairRequest = repairRequest;
-    }
 
     public Long getId() {
         return id;
@@ -45,19 +37,19 @@ public class UploadedFile {
         this.filePath = filePath;
     }
 
-    public LocalDateTime getUploadedAt() {
-        return uploadedAt;
-    }
-
-    public void setUploadedAt(LocalDateTime uploadedAt) {
-        this.uploadedAt = uploadedAt;
-    }
-
     public RepairRequest getRepairRequest() {
         return repairRequest;
     }
 
     public void setRepairRequest(RepairRequest repairRequest) {
         this.repairRequest = repairRequest;
+    }
+
+    public LocalDateTime getUploadedAt() {
+        return uploadedAt;
+    }
+
+    public void setUploadedAt(LocalDateTime uploadedAt) {
+        this.uploadedAt = uploadedAt;
     }
 }

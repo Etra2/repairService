@@ -50,10 +50,11 @@ public class AuthController {
         // Zapisanie kontekstu bezpieczeństwa
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Wygenerowanie tokena JWT
-        String jwt = jwtUtils.generateJwtToken(loginRequest.getEmail());
-
+        // Pobranie szczegółów użytkownika (email, rola)
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        // Wygenerowanie tokena JWT z emailem i rolą
+        String jwt = jwtUtils.generateJwtToken(userDetails.getEmail(), userDetails.getRole());
 
         // Tworzymy mapę z tokenem i danymi użytkownika
         Map<String, Object> response = new HashMap<>();

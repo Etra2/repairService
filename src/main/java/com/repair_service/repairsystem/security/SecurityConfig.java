@@ -43,28 +43,24 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService);
 
         http
-                .csrf(csrf -> csrf.disable())  // Wyłącz CSRF dla REST/SPA
+                .csrf(csrf -> csrf.disable()) // Wyłącz CSRF dla REST/SPA
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Zezwalamy na dostęp do stron Thymeleaf, CSS/JS i endpointów logowania/rejestracji
+                        // Publiczne strony i pliki
                         .requestMatchers(
-                                "/",               // Strona główna
-                                "/index",          // Strona logowania
-                                "/dashboard",      // Dashboard
-                                "/repair-form",    // Formularz dodania zgłoszenia
-                                "/repair-status",  // Status zgłoszenia
-                                "/style.css",
-                                "/script.js",
-                                "/css/**",
-                                "/js/**",
-                                "/api/auth/**"     // Logowanie i rejestracja
+                                "/", "/index", "/dashboard", "/repair-form", "/repair-status",
+                                "/style.css", "/script.js",
+                                "/css/**", "/js/**",
+                                "/api/auth/**"
                         ).permitAll()
-                        // Wszystkie pozostałe endpointy wymagają JWT
+                        // Endpointy wymagające konkretnej roli w dokładnej postaci z DB
+                        .requestMatchers("/api/repairs/**").hasAuthority("ROLE_CLIENT") // zamiast hasRole
                         .anyRequest().authenticated()
                 )
-                // Dodajemy filtr JWT **po wykluczeniu Thymeleaf i publicznych endpointów**
+                // Dodajemy filtr JWT
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
+

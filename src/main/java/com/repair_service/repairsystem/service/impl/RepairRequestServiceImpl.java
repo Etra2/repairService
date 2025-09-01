@@ -1,66 +1,54 @@
 package com.repair_service.repairsystem.service.impl;
 
 import com.repair_service.repairsystem.entity.RepairRequest;
+import com.repair_service.repairsystem.entity.User;
 import com.repair_service.repairsystem.repository.RepairRequestRepository;
-import com.repair_service.repairsystem.service.EmailService;
+import com.repair_service.repairsystem.repository.UserRepository;
 import com.repair_service.repairsystem.service.RepairRequestService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class RepairRequestServiceImpl implements RepairRequestService {
 
     private final RepairRequestRepository repairRequestRepository;
-    private final EmailService emailService;
+    private final UserRepository userRepository;
 
-    // Wstrzykiwanie repozytorium i serwisu e-mail przez konstruktor
-    public RepairRequestServiceImpl(RepairRequestRepository repairRequestRepository, EmailService emailService) {
+    public RepairRequestServiceImpl(RepairRequestRepository repairRequestRepository, UserRepository userRepository) {
         this.repairRequestRepository = repairRequestRepository;
-        this.emailService = emailService;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public RepairRequest createRepairRequest(RepairRequest request) {
-        // generowanie unikalnego numeru śledzenia
-        request.setTrackingId(UUID.randomUUID().toString());
+    public RepairRequest createRepairRequest(RepairRequest repairRequest, String userEmail) {
+        // Znajdź zalogowanego użytkownika po emailu
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Użytkownik nie istnieje"));
 
-        // ustawianie domyślnego statusu naprawy
-        request.setStatus("OCZEKUJĄCE");
+        repairRequest.setCustomer(user);                     // przypisanie klienta
+        repairRequest.setTrackingId(UUID.randomUUID().toString()); // generowanie unikalnego trackingId
+        repairRequest.setStatus("NEW");                      // ustawienie domyślnego statusu
 
-        // zapis do bazy
-        return repairRequestRepository.save(request);
+        return repairRequestRepository.save(repairRequest);
     }
 
     @Override
-    public RepairRequest getRequestByTrackingId(String trackingId) {
-        return repairRequestRepository
-                .findByTrackingId(trackingId)
-                .orElseThrow(() -> new RuntimeException("Brak zgłoszenia o podanym ID"));
+    public List<RepairRequest> getRepairsByCustomer(String userEmail) {
+        return repairRequestRepository.findByCustomerEmail(userEmail);
     }
 
-    /**
-     * Zakończenie naprawy i wysłanie powiadomienia e-mail
-     * @param requestId - ID zgłoszenia
-     * @return zaktualizowane zgłoszenie
-     */
     @Override
-    public RepairRequest completeRepair(Long requestId) {
-        // pobranie zgłoszenia
-        RepairRequest request = repairRequestRepository.findById(requestId)
+    public RepairRequest getRepairById(Long id) {
+        return repairRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Nie znaleziono zgłoszenia"));
+    }
 
-        // aktualizacja statusu
-        request.setStatus("ZAKOŃCZONE");
-        RepairRequest updated = repairRequestRepository.save(request);
-
-        // wysyłka powiadomienia e-mail
-        emailService.sendEmail(
-                request.getCustomer().getEmail(),
-                "Naprawa zakończona",
-                "Twoje zgłoszenie o numerze śledzenia " + request.getTrackingId() + " zostało zakończone."
-        );
-
-        return updated;
+    @Override
+    public RepairRequest updateRepairStatus(Long id, String status) {
+        RepairRequest repair = getRepairById(id);
+        repair.setStatus(status);
+        return repairRequestRepository.save(repair);
     }
 }
