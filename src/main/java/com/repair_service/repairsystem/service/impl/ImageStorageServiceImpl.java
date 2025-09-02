@@ -26,7 +26,8 @@ public class ImageStorageServiceImpl implements ImageStorageService {
         this.uploadedFileRepository = uploadedFileRepository;
     }
 
-    // zapis zdjęć na dysku i zwrócenie ścieżek
+    // zapis zdjęć na dysku i zwrócenie ścieżek dostępnych dla przeglądarki
+    @Override
     public List<String> storeImages(Long repairRequestId, MultipartFile[] images) {
         List<String> paths = new ArrayList<>();
         File dir = new File(uploadDir);
@@ -39,7 +40,12 @@ public class ImageStorageServiceImpl implements ImageStorageService {
                 File dest = new File(uploadDir + File.separator + filename);
                 try {
                     image.transferTo(dest);
-                    paths.add(dest.getAbsolutePath());
+
+                    //LOG: pokazuje w konsoli gdzie plik został zapisany
+                    System.out.println("Zapisano plik: " + dest.getAbsolutePath());
+
+                    // zamiast absolutnej ścieżki, zwracamy URL do pliku
+                    paths.add("/uploads/" + filename);
                     count++;
                 } catch (IOException e) {
                     throw new RuntimeException("Błąd podczas zapisu pliku: " + filename, e);
@@ -49,11 +55,12 @@ public class ImageStorageServiceImpl implements ImageStorageService {
         return paths;
     }
 
-    // zapis pojedynczego pliku w tabeli uploaded_file
+
+    @Override
     public void saveUploadedFile(RepairRequest request, String filePath) {
         UploadedFile uploadedFile = new UploadedFile();
-        uploadedFile.setRepairRequest(request); // <--- tu wywołujemy poprawną metodę z Twojej encji
-        uploadedFile.setFilePath(filePath);
+        uploadedFile.setRepairRequest(request);
+        uploadedFile.setFilePath(filePath); // tu zapisujemy już URL np. /uploads/...
         uploadedFileRepository.save(uploadedFile);
     }
 }

@@ -86,6 +86,8 @@ function logout() {
     window.location.href = "/";
 }
 
+
+
 // ================== CLIENT ==================
 
 /**
@@ -98,14 +100,12 @@ async function createRepairRequest() {
         return;
     }
 
-    // Pobranie danych z formularza
     const manufacturer = document.getElementById("manufacturer").value;
     const deviceModelName = document.getElementById("deviceModelName").value;
     const category = document.getElementById("category").value;
     const description = document.getElementById("description").value;
     const files = document.getElementById("images").files;
 
-    // Walidacja pól
     if (!manufacturer || !deviceModelName || !category || !description) {
         alert("Wypełnij wszystkie pola!");
         return;
@@ -114,7 +114,7 @@ async function createRepairRequest() {
     const body = { description, deviceModelName, manufacturer, category };
 
     try {
-        // Wysłanie zgłoszenia
+        // Tworzenie zgłoszenia
         const response = await fetch("http://localhost:8082/api/repairs", {
             method: "POST",
             headers: {
@@ -125,11 +125,7 @@ async function createRepairRequest() {
         });
 
         let repair;
-        try {
-            repair = await response.json();
-        } catch (e) {
-            repair = null;
-        }
+        try { repair = await response.json(); } catch (e) { repair = null; }
 
         if (!response.ok || !repair) {
             alert("Błąd przy tworzeniu zgłoszenia");
@@ -143,14 +139,19 @@ async function createRepairRequest() {
                 formData.append("images", files[i]);
             }
 
-            await fetch(`http://localhost:8082/api/repairs/${repair.id}/upload-images`, {
+            const uploadResponse = await fetch(`http://localhost:8082/api/repairs/${repair.id}/upload-images`, {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${token}` },
+                headers: { "Authorization": `Bearer ${token}` }, // uwaga: bez Content-Type!
                 body: formData
             });
+
+            if (!uploadResponse.ok) {
+                alert("Błąd podczas wysyłania zdjęć");
+                return;
+            }
         }
 
-        alert("Zgłoszenie zostało wysłane!");
+        alert(`Zgłoszenie zostało wysłane! Numer śledzenia: ${repair.trackingId}`);
         window.location.href = "/dashboard";
 
     } catch (err) {
@@ -169,31 +170,36 @@ async function checkStatus() {
         return;
     }
 
-    const id = document.getElementById("repairId").value;
+    const trackingId = document.getElementById("trackingId").value;
 
     try {
-        const response = await fetch(`http://localhost:8082/api/repairs/${id}`, {
+        const response = await fetch(`http://localhost:8082/api/repairs/status/${trackingId}`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
 
         let data;
-        try {
-            data = await response.json();
-        } catch (e) {
-            data = null;
-        }
+        try { data = await response.json(); } catch (e) { data = null; }
 
         if (response.ok && data) {
             let html = `<p><b>Opis:</b> ${data.description}</p>
                         <p><b>Status:</b> ${data.status}</p>`;
+
             if (data.reportId) {
                 html += `<button onclick="downloadReport(${data.reportId})">📥 Pobierz raport PDF</button>`;
             }
+
+            // Jeśli są zdjęcia
+            if (data.uploadedFiles && data.uploadedFiles.length > 0) {
+                html += `<p><b>Zdjęcia:</b></p>`;
+                data.uploadedFiles.forEach(file => {
+                    html += `<img src="${file.filePath}" alt="Zdjęcie" style="max-width:200px; margin:5px;">`;
+                });
+            }
+
             document.getElementById("statusResult").innerHTML = html;
         } else {
             alert("Nie znaleziono zgłoszenia.");
         }
-
     } catch (err) {
         console.error("Błąd sieci:", err);
         alert("Błąd sieci. Spróbuj ponownie.");
@@ -232,6 +238,7 @@ async function downloadReport(reportId) {
         alert("Błąd sieci. Spróbuj ponownie.");
     }
 }
+
 
 // ================== TECHNICIAN ==================
 

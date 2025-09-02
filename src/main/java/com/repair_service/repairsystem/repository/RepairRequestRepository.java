@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-// Repozytorium do obsługi zgłoszeń napraw
 public interface RepairRequestRepository extends JpaRepository<RepairRequest, Long> {
 
     // Szukanie zgłoszenia po numerze śledzenia (trackingId)
@@ -15,3 +14,4 @@ public interface RepairRequestRepository extends JpaRepository<RepairRequest, Lo
     // Szukanie wszystkich zgłoszeń danego klienta po emailu
     List<RepairRequest> findByCustomerEmail(String email);
 }
+

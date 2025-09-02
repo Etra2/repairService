@@ -8,8 +8,11 @@
 <body>
 <div class="container">
     <h2>Sprawdź status naprawy</h2>
-    <input type="number" id="repairId" placeholder="ID zgłoszenia">
-    <button onclick="checkStatus()">Sprawdź</button>
+    <div class="form-group">
+        <label for="trackingId">Numer śledzenia:</label>
+        <input type="text" id="trackingId" placeholder="Wpisz numer śledzenia" />
+    </div>
+    <button type="button" onclick="checkStatus()">Sprawdź</button>
     <div id="statusResult"></div>
 </div>
 <script th:src="@{/script.js}"></script>

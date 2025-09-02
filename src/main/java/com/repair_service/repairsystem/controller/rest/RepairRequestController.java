@@ -36,11 +36,9 @@ public class RepairRequestController {
     @PostMapping
     public ResponseEntity<RepairRequestDto> createRepair(@RequestBody CreateRepairRequestDto requestDto,
                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // pobranie zalogowanego użytkownika
         User customer = userRepository.findByEmail(userDetails.getEmail())
                 .orElseThrow(() -> new RuntimeException("Użytkownik nie istnieje"));
 
-        // sprawdzenie czy model urządzenia istnieje
         DeviceModel model = deviceModelRepository.findByModelName(requestDto.getDeviceModelName())
                 .orElseGet(() -> {
                     DeviceModel newModel = new DeviceModel();
@@ -50,7 +48,6 @@ public class RepairRequestController {
                     return deviceModelRepository.save(newModel);
                 });
 
-        // utworzenie zgłoszenia
         RepairRequest repairRequest = new RepairRequest();
         repairRequest.setDescription(requestDto.getDescription());
         repairRequest.setDeviceSerialNumber(requestDto.getDeviceSerialNumber());
@@ -58,10 +55,14 @@ public class RepairRequestController {
 
         RepairRequest created = repairRequestService.createRepairRequest(repairRequest, userDetails.getEmail());
 
-        // mapowanie RepairRequest -> RepairRequestDto
-        RepairRequestDto dto = mapToDto(created);
+        return ResponseEntity.ok(mapToDto(created));
+    }
 
-        return ResponseEntity.ok(dto);
+    // nowy endpoint GET /status/{trackingId}
+    @GetMapping("/status/{trackingId}")
+    public ResponseEntity<RepairRequestDto> getRepairStatus(@PathVariable String trackingId) {
+        RepairRequest repair = repairRequestService.getRepairByTrackingId(trackingId);
+        return ResponseEntity.ok(mapToDto(repair));
     }
 
     private RepairRequestDto mapToDto(RepairRequest request) {

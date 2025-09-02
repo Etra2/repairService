@@ -15,4 +15,7 @@ public interface RepairRequestService {
 
     // Aktualizacja statusu naprawy (dla technika)
     RepairRequest updateRepairStatus(Long id, String status);
+
+    // śledzenie po id
+    RepairRequest getRepairByTrackingId(String trackingId);
 }

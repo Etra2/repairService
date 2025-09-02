@@ -5,6 +5,7 @@ import com.repair_service.repairsystem.security.jwt.JwtUtils;
 import com.repair_service.repairsystem.security.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,7 +44,7 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService);
 
         http
-                .csrf(csrf -> csrf.disable()) // Wyłącz CSRF dla REST/SPA
+                .csrf(csrf -> csrf.disable()) // Wyłącz CSRF dla REST API
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Publiczne strony i pliki
@@ -51,16 +52,24 @@ public class SecurityConfig {
                                 "/", "/index", "/dashboard", "/repair-form", "/repair-status",
                                 "/style.css", "/script.js",
                                 "/css/**", "/js/**",
-                                "/api/auth/**"
+                                "/uploads/**"
                         ).permitAll()
-                        // Endpointy wymagające konkretnej roli w dokładnej postaci z DB
-                        .requestMatchers("/api/repairs/**").hasAuthority("ROLE_CLIENT") // zamiast hasRole
+
+                        // Publiczne endpointy autoryzacji
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+
+                        // Endpointy klienta
+                        .requestMatchers("/api/repairs/**").hasAuthority("ROLE_CLIENT")
+
+                        // Endpointy technika
+                        .requestMatchers("/api/technician/**").hasAuthority("ROLE_TECHNICIAN")
+
+                        // Wszystko inne wymaga autoryzacji
                         .anyRequest().authenticated()
                 )
-                // Dodajemy filtr JWT
+                // Dodajemy filtr JWT przed UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
-

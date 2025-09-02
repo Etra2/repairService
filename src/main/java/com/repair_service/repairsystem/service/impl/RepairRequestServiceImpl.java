@@ -23,13 +23,12 @@ public class RepairRequestServiceImpl implements RepairRequestService {
 
     @Override
     public RepairRequest createRepairRequest(RepairRequest repairRequest, String userEmail) {
-        // Znajdź zalogowanego użytkownika po emailu
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("Użytkownik nie istnieje"));
 
-        repairRequest.setCustomer(user);                     // przypisanie klienta
-        repairRequest.setTrackingId(UUID.randomUUID().toString()); // generowanie unikalnego trackingId
-        repairRequest.setStatus("NEW");                      // ustawienie domyślnego statusu
+        repairRequest.setCustomer(user);
+        repairRequest.setTrackingId(UUID.randomUUID().toString());
+        repairRequest.setStatus("NEW");
 
         return repairRequestRepository.save(repairRequest);
     }
@@ -50,5 +49,11 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         RepairRequest repair = getRepairById(id);
         repair.setStatus(status);
         return repairRequestRepository.save(repair);
+    }
+
+    @Override
+    public RepairRequest getRepairByTrackingId(String trackingId) {
+        return repairRequestRepository.findByTrackingId(trackingId)
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono zgłoszenia"));
     }
 }
