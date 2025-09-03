@@ -8,6 +8,8 @@
 </head>
 <body>
 <div class="container">
+
+    <!-- Formularz logowania -->
     <div id="login-form">
         <h2>Logowanie</h2>
         <input type="email" id="login-email" placeholder="Email"><br>
@@ -16,6 +18,7 @@
         <p>Nie masz konta? <a href="#" onclick="toggleForms()">Zarejestruj się</a></p>
     </div>
 
+    <!-- Formularz rejestracji -->
     <div id="register-form" class="hidden">
         <h2>Rejestracja</h2>
         <input type="text" id="reg-fullName" placeholder="Imię i nazwisko"><br>
@@ -24,7 +27,22 @@
         <button type="button" onclick="register()">Zarejestruj</button>
         <p>Masz już konto? <a href="#" onclick="toggleForms()">Zaloguj się</a></p>
     </div>
+
+    <!-- Formularz zmiany hasła -->
+    <div id="change-password-form" class="hidden">
+        <h2>Zmiana hasła</h2>
+        <input type="email" id="cp-email" placeholder="Email"><br>
+        <input type="password" id="cp-old-password" placeholder="Stare hasło"><br>
+        <input type="password" id="cp-new-password" placeholder="Nowe hasło"><br>
+        <button type="button" onclick="changePassword()">Zmień hasło</button>
+        <p><a href="#" onclick="toggleChangePasswordForm()">Anuluj</a></p>
+    </div>
+
+    <!-- Przycisk pokazujący formularz zmiany hasła -->
+    <button id="change-password-btn" onclick="toggleChangePasswordForm()">Zmiana hasła</button>
 </div>
+
+<!-- Skrypt JS -->
 <script th:src="@{/script.js}"></script>
 </body>
 </html>

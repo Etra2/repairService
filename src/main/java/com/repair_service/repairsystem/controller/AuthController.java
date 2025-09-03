@@ -2,6 +2,7 @@ package com.repair_service.repairsystem.controller;
 
 import com.repair_service.repairsystem.dto.auth.AuthRequestDto;
 import com.repair_service.repairsystem.dto.LoginRequestDto;
+import com.repair_service.repairsystem.dto.auth.ChangePasswordDto;
 import com.repair_service.repairsystem.entity.User;
 import com.repair_service.repairsystem.repository.UserRepository;
 import com.repair_service.repairsystem.security.UserDetailsImpl;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +40,8 @@ public class AuthController {
     // ==================== LOGIN ====================
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDto loginRequest) {
+        System.out.println("Login attempt: " + loginRequest.getEmail() + " | Password: " + loginRequest.getPassword());
 
-        // Uwierzytelnienie użytkownika w Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -47,16 +49,11 @@ public class AuthController {
                 )
         );
 
-        // Zapisanie kontekstu bezpieczeństwa
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Pobranie szczegółów użytkownika (email, rola)
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        // Wygenerowanie tokena JWT z emailem i rolą
         String jwt = jwtUtils.generateJwtToken(userDetails.getEmail(), userDetails.getRole());
 
-        // Tworzymy mapę z tokenem i danymi użytkownika
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
 
@@ -73,25 +70,38 @@ public class AuthController {
     // ==================== REGISTER ====================
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody AuthRequestDto signUpRequest) {
-        // Sprawdzenie, czy email już istnieje w bazie
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", "Błąd: Email jest już zajęty!");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(Map.of("message", "Błąd: Email jest już zajęty!"));
         }
 
-        // Tworzymy nowego użytkownika z danych z DTO
         User user = new User();
         user.setFullName(signUpRequest.getFullName());
         user.setEmail(signUpRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword())); // hashujemy hasło
-        user.setRole("ROLE_CLIENT"); // nadajemy rolę klienta domyślnie
+        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        user.setRole("ROLE_CLIENT"); // domyślna rola
 
-        // Zapis do bazy
         userRepository.save(user);
 
-        Map<String, String> success = new HashMap<>();
-        success.put("message", "Użytkownik zarejestrowany pomyślnie!");
-        return ResponseEntity.ok(success);
+        return ResponseEntity.ok(Map.of("message", "Użytkownik zarejestrowany pomyślnie!"));
+    }
+
+    // ==================== CHANGE PASSWORD ====================
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDto dto,
+                                            @AuthenticationPrincipal UserDetailsImpl currentUser) {
+
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("Użytkownik nie istnieje"));
+
+        // Sprawdzenie starego hasła
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Niepoprawne stare hasło"));
+        }
+
+        // Zapis nowego hasła
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "Hasło zmienione pomyślnie!"));
     }
 }

@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * 🔍 Filtr JWT – sprawdza nagłówek Authorization: "Bearer <token>".
- * Omija ścieżki logowania i rejestracji, żeby POST /api/auth/** nie zwracało 403.
+ * Filtr JWT – sprawdza nagłówek Authorization: "Bearer <token>".
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

@@ -35,7 +35,7 @@ public class JwtUtils {
     public String generateJwtToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username) // email/login
-                .addClaims(Map.of("role", role)) // dodajemy rolę jako claim
+                .addClaims(Map.of("role", role)) // dodaje rolę jako claim
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

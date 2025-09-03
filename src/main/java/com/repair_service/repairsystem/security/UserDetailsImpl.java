@@ -49,7 +49,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Ważne: Spring wymaga GrantedAuthority -> tu wrzucamy rolę z DB (np. ROLE_CLIENT)
+        // Spring wymaga GrantedAuthority - tu wrzucamy rolę z DB (np. ROLE_CLIENT)
         return List.of(new SimpleGrantedAuthority(role));
     }
 

@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    /*Wyszukuje użytkownika w bazie po e-mailu.
+    /* Wyszukuje użytkownika w bazie po e-mailu.
      Jeśli nie znajdzie — rzuca wyjątek.
      */
     @Override
@@ -28,6 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Użytkownik o adresie " + email + " nie istnieje"));
 
+        System.out.println("🔑 Załadowano usera: " + user.getEmail() + " | Rola: " + user.getRole());
         return UserDetailsImpl.build(user);
     }
 }

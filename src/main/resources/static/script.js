@@ -23,11 +23,7 @@ async function login() {
         });
 
         let data;
-        try {
-            data = await response.json();
-        } catch (e) {
-            data = { message: response.statusText };
-        }
+        try { data = await response.json(); } catch (e) { data = { message: response.statusText }; }
 
         if (response.ok) {
             localStorage.setItem("token", data.token);
@@ -56,15 +52,11 @@ async function register() {
         const response = await fetch("http://localhost:8082/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fullName, email, password }) // role ustawiana w backendzie
+            body: JSON.stringify({ fullName, email, password })
         });
 
         let data;
-        try {
-            data = await response.json();
-        } catch (e) {
-            data = { message: response.statusText };
-        }
+        try { data = await response.json(); } catch (e) { data = { message: response.statusText }; }
 
         if (response.ok) {
             alert(data.message || "Rejestracja zakończona, zaloguj się!");
@@ -84,6 +76,55 @@ async function register() {
 function logout() {
     localStorage.clear();
     window.location.href = "/";
+}
+
+
+// ================== Change password ==================
+
+/**
+ * Toggle formularza zmiany hasła
+ */
+function toggleChangePasswordForm() {
+    const form = document.getElementById("change-password-form");
+    form.classList.toggle("hidden");
+}
+
+/**
+ * Zmiana hasła (dostępna przed logowaniem dla obu ról)
+ */
+async function changePassword() {
+    const email = document.getElementById("cp-email").value;
+    const oldPassword = document.getElementById("cp-old-password").value;
+    const newPassword = document.getElementById("cp-new-password").value;
+
+    if (!email || !oldPassword || !newPassword) {
+        alert("Wypełnij wszystkie pola!");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8082/api/auth/change-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, oldPassword, newPassword })
+        });
+
+        let data;
+        try { data = await response.json(); } catch (e) { data = { message: response.statusText }; }
+
+        if (response.ok) {
+            alert(data.message || "Hasło zmienione pomyślnie!");
+            toggleChangePasswordForm();
+            document.getElementById("cp-email").value = "";
+            document.getElementById("cp-old-password").value = "";
+            document.getElementById("cp-new-password").value = "";
+        } else {
+            alert("Błąd: " + (data.message || "Nieznany błąd"));
+        }
+    } catch (err) {
+        console.error("Błąd sieci:", err);
+        alert("Błąd sieci. Spróbuj ponownie.");
+    }
 }
 
 
@@ -336,3 +377,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loadRepairsForTechnician();
     }
 });
+
+
+

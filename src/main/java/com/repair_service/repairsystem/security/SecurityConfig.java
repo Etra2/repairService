@@ -44,16 +44,15 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService);
 
         http
-                .csrf(csrf -> csrf.disable()) // Wyłącz CSRF dla REST API
+                .csrf(csrf -> csrf.disable()) // Wyłączenie CSRF dla REST API
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Publiczne strony i pliki
-                        .requestMatchers(
-                                "/", "/index", "/dashboard", "/repair-form", "/repair-status",
-                                "/style.css", "/script.js",
-                                "/css/**", "/js/**",
-                                "/uploads/**"
-                        ).permitAll()
+                        // Publiczne strony / pliki HTML
+                        .requestMatchers("/", "/index", "/dashboard", "/repair-form", "/repair-status").permitAll()
+
+                        // Statyczne pliki (CSS, JS, obrazy)
+                        .requestMatchers("/style.css", "/script.js").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
 
                         // Publiczne endpointy autoryzacji
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
