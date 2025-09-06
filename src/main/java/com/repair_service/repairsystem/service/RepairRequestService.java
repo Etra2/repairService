@@ -2,6 +2,8 @@ package com.repair_service.repairsystem.service;
 
 import com.repair_service.repairsystem.entity.RepairRequest;
 
+import java.util.List;
+
 public interface RepairRequestService {
 
     // Tworzenie nowego zgłoszenia
@@ -18,4 +20,7 @@ public interface RepairRequestService {
 
     // śledzenie po id
     RepairRequest getRepairByTrackingId(String trackingId);
+
+    // pobranie wszystkich zgłoszeń (dla technika)
+    List<RepairRequest> getAllRepairs();
 }

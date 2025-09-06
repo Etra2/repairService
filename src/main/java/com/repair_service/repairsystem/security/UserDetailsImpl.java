@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Implementacja Spring Security UserDetails opakowująca encję User.
+ * Minimalistyczna wersja, kompatybilna z istniejącym UserServiceImpl.
  */
 public class UserDetailsImpl implements UserDetails {
 
@@ -25,7 +26,9 @@ public class UserDetailsImpl implements UserDetails {
         this.role = role;
     }
 
-    /** Buduje obiekt UserDetailsImpl na podstawie encji User */
+    /**
+     * Tworzy UserDetailsImpl na podstawie encji User.
+     */
     public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
                 user.getId(),
@@ -49,7 +52,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Spring wymaga GrantedAuthority - tu wrzucamy rolę z DB (np. ROLE_CLIENT)
         return List.of(new SimpleGrantedAuthority(role));
     }
 
@@ -60,26 +62,18 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // email używany jako login
+        return email; // email jest loginem
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isEnabled() { return true; }
 }

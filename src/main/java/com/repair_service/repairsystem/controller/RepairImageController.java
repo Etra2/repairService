@@ -1,4 +1,4 @@
-package com.repair_service.repairsystem.controller.rest;
+package com.repair_service.repairsystem.controller;
 
 import com.repair_service.repairsystem.entity.RepairRequest;
 import com.repair_service.repairsystem.repository.RepairRequestRepository;

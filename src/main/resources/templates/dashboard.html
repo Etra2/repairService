@@ -18,7 +18,8 @@
 
     <div id="technician-view" class="hidden">
         <p>Panel technika</p>
-        <a th:href="@{/technician/repairs}">📋 Wyświetl zgłoszenia</a>
+        <button onclick="loadRepairs()">Załaduj zgłoszenia</button>
+        <div id="repairs-list"></div>
     </div>
 
     <button onclick="logout()">Wyloguj</button>

@@ -56,4 +56,10 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         return repairRequestRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new RuntimeException("Nie znaleziono zgłoszenia"));
     }
+
+    @Override
+    public List<RepairRequest> getAllRepairs() {
+        // metoda dla technika – pobiera wszystkie zgłoszenia z bazy
+        return repairRequestRepository.findAll();
+    }
 }

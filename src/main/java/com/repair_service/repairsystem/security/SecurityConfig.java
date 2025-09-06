@@ -26,49 +26,48 @@ public class SecurityConfig {
         this.jwtUtils = jwtUtils;
     }
 
-    // Kodowanie haseł
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Manager do uwierzytelniania
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    // Konfiguracja zabezpieczeń
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService);
+        JwtDebugFilter jwtDebugFilter = new JwtDebugFilter(); // filtr debugowy
 
         http
-                .csrf(csrf -> csrf.disable()) // Wyłączenie CSRF dla REST API
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Publiczne strony / pliki HTML
-                        .requestMatchers("/", "/index", "/dashboard", "/repair-form", "/repair-status").permitAll()
+                        // public
+                        .requestMatchers("/", "/index", "/style.css", "/script.js", "/css/**", "/js/**", "/uploads/**").permitAll()
+                        .requestMatchers("/dashboard").permitAll() // HTML dashboard dostępny, ale fetch wymaga tokena
+                        .requestMatchers("/repair-form", "/repair-status").authenticated()
 
-                        // Statyczne pliki (CSS, JS, obrazy)
-                        .requestMatchers("/style.css", "/script.js").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/uploads/**").permitAll()
-
-                        // Publiczne endpointy autoryzacji
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
-
-                        // Endpointy klienta
-                        .requestMatchers("/api/repairs/**").hasAuthority("ROLE_CLIENT")
-
-                        // Endpointy technika
+                        // technik – widok i API
+                        .requestMatchers("/technician/repairs").hasAuthority("ROLE_TECHNICIAN")
                         .requestMatchers("/api/technician/**").hasAuthority("ROLE_TECHNICIAN")
 
-                        // Wszystko inne wymaga autoryzacji
+                        // klient – API
+                        .requestMatchers("/api/client/**").hasAuthority("ROLE_CLIENT")
+
+                        // logowanie/rejestracja
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+
+                        // wszystko inne autoryzacja
                         .anyRequest().authenticated()
                 )
-                // Dodajemy filtr JWT przed UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtDebugFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
+
+
