@@ -48,7 +48,8 @@ public class SecurityConfig {
                         // public
                         .requestMatchers("/", "/index", "/style.css", "/script.js", "/css/**", "/js/**", "/uploads/**").permitAll()
                         .requestMatchers("/dashboard").permitAll() // HTML dashboard dostępny, ale fetch wymaga tokena
-                        .requestMatchers("/repair-form", "/repair-status").authenticated()
+                        .requestMatchers("/repair-form", "/repair-status").permitAll() // formularz i status publiczne
+
 
                         // technik – widok i API
                         .requestMatchers("/technician/repairs").hasAuthority("ROLE_TECHNICIAN")
@@ -56,6 +57,7 @@ public class SecurityConfig {
 
                         // klient – API
                         .requestMatchers("/api/client/**").hasAuthority("ROLE_CLIENT")
+
 
                         // logowanie/rejestracja
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
