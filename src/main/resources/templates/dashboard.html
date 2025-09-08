@@ -10,12 +10,14 @@
 <div class="container">
     <h1>Witaj w panelu!</h1>
 
+    <!-- Panel klienta -->
     <div id="client-view" class="hidden">
         <p>Panel klienta</p>
         <a th:href="@{/repair-form}">Dodaj zgłoszenie</a>
         <a th:href="@{/repair-status}">Sprawdź status naprawy</a>
     </div>
 
+    <!-- Panel technika -->
     <div id="technician-view" class="hidden">
         <p>Panel technika</p>
         <button onclick="loadRepairs()">Załaduj zgłoszenia</button>
@@ -24,6 +26,7 @@
 
     <button onclick="logout()">Wyloguj</button>
 </div>
+
 <script th:src="@{/script.js}"></script>
 </body>
 </html>

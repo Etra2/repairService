@@ -57,6 +57,7 @@ public class SecurityConfig {
 
                         // klient – API
                         .requestMatchers("/api/client/**").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers("/api/client/repairs/**").hasAuthority("ROLE_CLIENT")
 
 
                         // logowanie/rejestracja

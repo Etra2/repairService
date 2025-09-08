@@ -13,20 +13,23 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/repairs")
+@RequestMapping("/api/client/repairs") // 🔑 zmiana – zgodne z SecurityConfig
 public class RepairImageController {
 
     private final RepairRequestRepository repairRequestRepository;
     private final ImageStorageService imageStorageService;
 
     @Autowired
-    public RepairImageController(RepairRequestRepository repairRequestRepository, ImageStorageService imageStorageService) {
+    public RepairImageController(RepairRequestRepository repairRequestRepository,
+                                 ImageStorageService imageStorageService) {
         this.repairRequestRepository = repairRequestRepository;
         this.imageStorageService = imageStorageService;
     }
 
     @PostMapping("/{id}/upload-images")
-    public ResponseEntity<String> uploadImages(@PathVariable Long id, @RequestParam("images") MultipartFile[] images) {
+    public ResponseEntity<String> uploadImages(
+            @PathVariable Long id,
+            @RequestParam("images") MultipartFile[] images) {
 
         if (images.length > 3) {
             return ResponseEntity.badRequest().body("Możesz wgrać maksymalnie 3 zdjęcia.");
@@ -34,7 +37,10 @@ public class RepairImageController {
 
         // pobranie zgłoszenia
         RepairRequest request = repairRequestRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono zgłoszenia"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Nie znaleziono zgłoszenia"
+                ));
 
         // zapis zdjęć na dysku
         List<String> imagePaths = imageStorageService.storeImages(id, images);
