@@ -12,6 +12,7 @@ import com.repair_service.repairsystem.repository.UserRepository;
 import com.repair_service.repairsystem.security.UserDetailsImpl;
 import com.repair_service.repairsystem.service.PDFService;
 import com.repair_service.repairsystem.service.RepairRequestService;
+import com.repair_service.repairsystem.service.EmailService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,6 +24,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Kontroler technika
+ */
 @RestController
 @RequestMapping("/api/technician/repairs")
 public class TechnicianRepairController {
@@ -32,17 +36,20 @@ public class TechnicianRepairController {
     private final RepairReportRepository repairReportRepository;
     private final UserRepository userRepository;
     private final PDFService pdfService;
+    private final EmailService emailService;
 
     public TechnicianRepairController(RepairRequestService repairRequestService,
                                       RepairRequestRepository repairRequestRepository,
                                       RepairReportRepository repairReportRepository,
                                       UserRepository userRepository,
-                                      PDFService pdfService) {
+                                      PDFService pdfService,
+                                      EmailService emailService) {
         this.repairRequestService = repairRequestService;
         this.repairRequestRepository = repairRequestRepository;
         this.repairReportRepository = repairReportRepository;
         this.userRepository = userRepository;
         this.pdfService = pdfService;
+        this.emailService = emailService;
     }
 
     // Pobranie wszystkich zgłoszeń technika
@@ -123,5 +130,33 @@ public class TechnicianRepairController {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
+    }
+
+    //  ENDPOINT wysyłki maila z PDF
+    @PostMapping("/{id}/send-email")
+    public ResponseEntity<?> sendRepairEmail(@PathVariable Long id) {
+        // Pobranie zgłoszenia
+        RepairRequest repair = repairRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono zgłoszenia"));
+
+        if (repair.getCustomer() == null || repair.getCustomer().getEmail() == null) {
+            return ResponseEntity.badRequest().body("Brak e-maila klienta");
+        }
+
+        String email = repair.getCustomer().getEmail();
+        String subject = "Twoja naprawa została zakończona!";
+        String body = "Zgłoszenie ID: " + repair.getId() + " zostało zakończone.\n" +
+                "Możesz pobrać raport PDF.";
+
+        // Generowanie PDF i wysyłka maila
+        RepairReport report = repair.getReport();
+        if (report != null) {
+            var pdfStream = pdfService.generateRepairReportPdf(report.getId());
+            emailService.sendEmailWithAttachment(email, subject, body, pdfStream, "repair-report-" + repair.getId() + ".pdf");
+        } else {
+            emailService.sendEmail(email, subject, body);
+        }
+
+        return ResponseEntity.ok("Email wysłany");
     }
 }

@@ -349,10 +349,36 @@ async function downloadPdf(repairId) {
     }
 }
 
-// Na razie tylko placeholder - wysyłanie maila z backendu do zrobienia
+// Wysyłka maila z backendu
 async function sendEmail(repairId) {
-    alert("Funkcja wysyłki email zostanie dodana później. Wywołano dla zgłoszenia ID: " + repairId);
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Brak tokenu – zaloguj się ponownie!");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8082/api/technician/repairs/${repairId}/send-email`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            alert("Email wysłany!");
+        } else {
+            const errorText = await response.text(); // dodatkowo możemy pokazać treść błędu z backendu
+            alert("Błąd wysyłki: " + response.status + " " + errorText);
+        }
+
+    } catch (err) {
+        console.error("Błąd sieci przy wysyłce email:", err);
+        alert("Błąd sieci – sprawdź połączenie z serwerem.");
+    }
 }
+
 
 
 
