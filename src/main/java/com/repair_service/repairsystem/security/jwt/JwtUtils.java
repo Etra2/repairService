@@ -9,9 +9,8 @@ import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
-/**
- * Klasa pomocnicza do obsługi JWT.
- */
+// Klasa pomocnicza do obsługi JWT
+
 @Component
 public class JwtUtils {
 
@@ -25,12 +24,10 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    /**
-     * Generuje nowy token JWT dla podanego użytkownika.
-     *
-     * @param username email użytkownika
-     * @param role rola użytkownika (np. ROLE_CLIENT)
-     * @return token JWT
+    /* Generuje nowy token JWT dla podanego użytkownika.
+        @param username email użytkownika
+        @param role rola użytkownika
+        @return token JWT
      */
     public String generateJwtToken(String username, String role) {
         return Jwts.builder()

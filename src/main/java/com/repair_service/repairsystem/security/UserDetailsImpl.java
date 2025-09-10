@@ -8,9 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Implementacja Spring Security UserDetails opakowująca encję User.
- * Minimalistyczna wersja, kompatybilna z istniejącym UserServiceImpl.
+/*  Implementacja Spring Security UserDetails opakowująca encję User.
+    Minimalistyczna wersja, kompatybilna z istniejącym UserServiceImpl.
  */
 public class UserDetailsImpl implements UserDetails {
 
@@ -26,9 +25,7 @@ public class UserDetailsImpl implements UserDetails {
         this.role = role;
     }
 
-    /**
-     * Tworzy UserDetailsImpl na podstawie encji User.
-     */
+    // Tworzy UserDetailsImpl na podstawie encji User.
     public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
                 user.getId(),

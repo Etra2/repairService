@@ -44,7 +44,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
                     //LOG: pokazuje w konsoli gdzie plik został zapisany
                     System.out.println("Zapisano plik: " + dest.getAbsolutePath());
 
-                    // zamiast absolutnej ścieżki, zwracamy URL do pliku
+                    // zamiast absolutnej ścieżki, zwraca URL do pliku
                     paths.add("/uploads/" + filename);
                     count++;
                 } catch (IOException e) {
@@ -60,7 +60,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
     public void saveUploadedFile(RepairRequest request, String filePath) {
         UploadedFile uploadedFile = new UploadedFile();
         uploadedFile.setRepairRequest(request);
-        uploadedFile.setFilePath(filePath); // tu zapisujemy już URL np. /uploads/...
+        uploadedFile.setFilePath(filePath); // tu zapisany jest już URL np. /uploads/...
         uploadedFileRepository.save(uploadedFile);
     }
 }

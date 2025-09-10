@@ -14,9 +14,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Filtr JWT – sprawdza nagłówek Authorization: "Bearer <token>".
- */
+// Filtr JWT – sprawdza nagłówek Authorization: "Bearer <token>".
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;

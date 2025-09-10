@@ -7,7 +7,7 @@ public class RepairRequestCreateDto {
     private String deviceModelName;
     private String manufacturer;
     private String category;
-    private List<String> imagePaths; // opcjonalnie, jeśli planujesz używać
+    private List<String> imagePaths;
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

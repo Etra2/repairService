@@ -17,7 +17,7 @@ public interface RepairRequestRepository extends JpaRepository<RepairRequest, Lo
     // Szukanie wszystkich zgłoszeń danego klienta po emailu
     List<RepairRequest> findByCustomerEmail(String email);
 
-    // Pobranie zgłoszenia wraz ze wszystkimi powiązaniami (fetch join) – nowa poprawna metoda
+    // Pobranie zgłoszenia wraz ze wszystkimi powiązaniami (fetch join)
     @EntityGraph(attributePaths = {"customer","model","report","report.technician","uploadedFiles"})
     @Query("SELECT r FROM RepairRequest r WHERE r.id = :id")
     Optional<RepairRequest> findByIdWithAssociations(@Param("id") Long id);

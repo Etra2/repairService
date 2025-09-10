@@ -25,15 +25,15 @@ public class RepairServiceImpl {
 
     public boolean createRepairRequest(String clientEmail, String deviceType, String description) {
         try {
-            // Znajdź użytkownika po emailu
+            // Znajdowanie użytkownika po emailu
             User customer = userRepository.findByEmail(clientEmail)
                     .orElseThrow(() -> new RuntimeException("Client not found"));
 
-            // Znajdź model urządzenia po nazwie
+            // Znajdowanie modelu urządzenia po nazwie
             DeviceModel model = deviceModelRepository.findByModelName(deviceType)
                     .orElseThrow(() -> new RuntimeException("Device model not found"));
 
-            // Utwórz nowy rekord naprawy
+            // Tworzy nowy rekord naprawy
             RepairRequest repairRequest = new RepairRequest();
             repairRequest.setCustomer(customer);      // ustaw klienta
             repairRequest.setModel(model);            // ustaw model urządzenia
@@ -43,7 +43,7 @@ public class RepairServiceImpl {
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace(); // żeby widzieć błąd w logach
+            e.printStackTrace();
             return false;
         }
     }

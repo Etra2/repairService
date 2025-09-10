@@ -97,7 +97,7 @@ async function createRepairRequest() {
     const body = { description, deviceModelName, manufacturer, category };
 
     try {
-        // Tworzymy zgłoszenie naprawy
+        // Tworzy zgłoszenie naprawy
         const response = await fetch("http://localhost:8082/api/client/repairs", {
             method: "POST",
             headers: {
@@ -144,7 +144,6 @@ async function createRepairRequest() {
             }
         }
 
-        // Sukces
         alert(` Zgłoszenie zostało wysłane!\nNumer śledzenia: ${repair.trackingId}`);
         window.location.href = "/dashboard";
 
@@ -241,7 +240,7 @@ async function editRepair(id) {
 
         const repair = await response.json();
 
-        // Tworzymy modal dopiero tutaj
+        // Tworzy modal
         const modal = document.createElement("div");
         modal.className = "modal";
         modal.id = "dynamic-modal";

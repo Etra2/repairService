@@ -1,8 +1,6 @@
-# repair.graphqls
 
-# -----------------------------------
+
 # Typy danych
-# -----------------------------------
 
 type RepairRequest {
     id: ID!
@@ -46,9 +44,7 @@ type UploadedFile {
     repairRequest: RepairRequest
 }
 
-# -----------------------------------
 # Zapytania (queries)
-# -----------------------------------
 
 type Query {
     getAllRepairRequests: [RepairRequest]
@@ -56,9 +52,7 @@ type Query {
     getRepairRequestsByCustomer(customerId: ID!): [RepairRequest]
 }
 
-# -----------------------------------
 # Mutacje (mutations)
-# -----------------------------------
 
 input RepairRequestInput {
     trackingId: String!

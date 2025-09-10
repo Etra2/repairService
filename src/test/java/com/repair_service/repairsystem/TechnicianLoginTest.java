@@ -30,7 +30,7 @@ public class TechnicianLoginTest {
         // Endpoint logowania
         String url = "http://localhost:" + port + "/api/auth/login";
 
-        //Dane technika z bazy (upewnij się, że hasło jest zakodowane w BCrypt)
+        //Dane technika z bazy (upewnienie się, że hasło jest zakodowane w BCrypt)
         Map<String, String> loginRequest = Map.of(
                 "email", "technik1@repair.com",
                 "password", "12345"

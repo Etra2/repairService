@@ -8,49 +8,43 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-/**
- * Implementacja serwisu użytkowników.
- * Zawiera metody do zapisu, wyszukiwania po email i po ID.
- * Serwis działa jako warstwa pośrednia między kontrolerem a repozytorium.
+/*  Implementacja serwisu użytkowników - zawiera metody do zapisu, wyszukiwania po email i po ID.
+    Serwis działa jako warstwa pośrednia między kontrolerem a repozytorium.
  */
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    /**
-     * Konstruktor z wstrzykiwaniem repozytorium użytkowników.
-     * @param userRepository repozytorium użytkowników
+    /* Konstruktor z wstrzykiwaniem repozytorium użytkowników.
+       @param userRepository repozytorium użytkowników
      */
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Zapis nowego użytkownika lub aktualizacja istniejącego.
-     * @param user obiekt User do zapisania
-     * @return zapisany obiekt User
+    /* Zapis nowego użytkownika lub aktualizacja istniejącego.
+       @param user obiekt User do zapisania
+       @return zapisany obiekt User
      */
     @Override
     public User saveUser(User user) {
         return userRepository.save(user);
     }
 
-    /**
-     * Wyszukiwanie użytkownika po adresie email.
-     * @param email adres email użytkownika
-     * @return Optional<User> – obiekt użytkownika jeśli istnieje
+    /* Wyszukiwanie użytkownika po adresie email.
+       @param email adres email użytkownika
+       @return Optional<User> – obiekt użytkownika jeśli istnieje
      */
     @Override
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    /**
-     * Wyszukiwanie użytkownika po ID.
-     * @param id identyfikator użytkownika
-     * @return Optional<User> – obiekt użytkownika jeśli istnieje
+    /* Wyszukiwanie użytkownika po ID.
+       @param id identyfikator użytkownika
+       @return Optional<User> – obiekt użytkownika jeśli istnieje
      */
     @Override
     public Optional<User> findById(Long id) {

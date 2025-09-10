@@ -38,7 +38,7 @@ public class TechnicianRepairController {
         this.userRepository = userRepository;
     }
 
-    // Pobranie wszystkich zgłoszeń technika (Twój istniejący kod)
+    // Pobranie wszystkich zgłoszeń technika
     @GetMapping("/all")
     public ResponseEntity<List<RepairRequestDto>> getAllRepairs() {
         List<RepairRequest> repairs = repairRequestService.getAllRepairs();
@@ -66,13 +66,13 @@ public class TechnicianRepairController {
 
         RepairRequest rr = opt.get();
 
-        // 1) status w repair_request
+        // status w repair_request
         if (payload.getStatus() != null && !payload.getStatus().isBlank()) {
             rr.setStatus(payload.getStatus());
         }
         repairRequestRepository.save(rr);
 
-        // 2) opis technika -> repair_report.repair_summary
+        // opis technika - repair_report.repair_summary
         if (payload.getTechnicianDescription() != null) {
             RepairReport report = rr.getReport();
             if (report == null) {

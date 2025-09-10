@@ -40,7 +40,7 @@ public class PageController {
         return "repair_status"; // src/main/resources/templates/repair_status.html
     }
 
-    // 🔹 Technika - lista wszystkich zgłoszeń
+    // lista wszystkich zgłoszeń technik
     @GetMapping("/technician/repairs")
     public String technicianRepairs(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // Wyświetlamy e-mail technika w HTML zamiast fullName

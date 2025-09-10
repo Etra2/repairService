@@ -59,7 +59,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
 
     @Override
     public List<RepairRequest> getAllRepairs() {
-        // metoda dla technika – pobiera wszystkie zgłoszenia z bazy
+        // pobiera wszystkie zgłoszenia z bazy - dla technika
         return repairRequestRepository.findAll();
     }
 }

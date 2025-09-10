@@ -15,7 +15,7 @@ public class RepairMapper {
     public static RepairRequestDto mapToDto(RepairRequest request) {
         RepairRequestDto dto = new RepairRequestDto();
 
-        // Podstawowe pola naprawy (Twój istniejący kod)
+        // Podstawowe pola naprawy
         dto.setId(request.getId());
         dto.setTrackingId(request.getTrackingId());
         dto.setDeviceSerialNumber(request.getDeviceSerialNumber());
@@ -45,7 +45,7 @@ public class RepairMapper {
                 : null;
         dto.setUploadedFileIds(uploadedFileIds);
 
-        // --------- nowe pola dla modala ----------
+        // nowe pola dla modala
         if (request.getCustomer() != null) {
             UserDTO customer = new UserDTO();
             customer.setId(request.getCustomer().getId());
