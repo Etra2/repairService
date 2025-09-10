@@ -9,10 +9,14 @@ import com.repair_service.repairsystem.entity.User;
 import com.repair_service.repairsystem.repository.RepairReportRepository;
 import com.repair_service.repairsystem.repository.RepairRequestRepository;
 import com.repair_service.repairsystem.repository.UserRepository;
+import com.repair_service.repairsystem.security.UserDetailsImpl;
+import com.repair_service.repairsystem.service.PDFService;
 import com.repair_service.repairsystem.service.RepairRequestService;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import com.repair_service.repairsystem.security.UserDetailsImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,15 +31,18 @@ public class TechnicianRepairController {
     private final RepairRequestRepository repairRequestRepository;
     private final RepairReportRepository repairReportRepository;
     private final UserRepository userRepository;
+    private final PDFService pdfService;
 
     public TechnicianRepairController(RepairRequestService repairRequestService,
                                       RepairRequestRepository repairRequestRepository,
                                       RepairReportRepository repairReportRepository,
-                                      UserRepository userRepository) {
+                                      UserRepository userRepository,
+                                      PDFService pdfService) {
         this.repairRequestService = repairRequestService;
         this.repairRequestRepository = repairRequestRepository;
         this.repairReportRepository = repairReportRepository;
         this.userRepository = userRepository;
+        this.pdfService = pdfService;
     }
 
     // Pobranie wszystkich zgłoszeń technika
@@ -99,5 +106,22 @@ public class TechnicianRepairController {
             @RequestParam String newStatus) {
         RepairRequest updated = repairRequestService.updateRepairStatus(id, newStatus);
         return ResponseEntity.ok(RepairMapper.mapToDto(updated));
+    }
+
+    //  ENDPOINT PDF
+    @GetMapping("/{id}/report-pdf")
+    public ResponseEntity<InputStreamResource> downloadRepairPdf(@PathVariable Long id) {
+        RepairReport report = repairReportRepository.findByRepairRequestId(id)
+                .orElseThrow(() -> new RuntimeException("Brak raportu dla zgłoszenia " + id));
+
+        var bis = pdfService.generateRepairReportPdf(report.getId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=repair-report-" + id + ".pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
 }

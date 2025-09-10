@@ -172,7 +172,7 @@ async function checkStatus() {
             let html = `<p><b>Opis:</b> ${data.description}</p>
                         <p><b>Status:</b> ${data.status}</p>`;
 
-            if (data.reportId) html += `<button onclick="downloadReport(${data.reportId})">📥 Pobierz raport PDF</button>`;
+            if (data.reportId) html += `<button onclick="downloadReport(${data.reportId})"> Pobierz raport PDF</button>`;
             if (data.uploadedFiles?.length > 0) {
                 html += `<p><b>Zdjęcia:</b></p>`;
                 data.uploadedFiles.forEach(file => {
@@ -192,12 +192,14 @@ async function checkStatus() {
 
 // ================== TECHNICIAN ==================
 
+// Ładowanie listy zgłoszeń technika
 async function loadRepairs() {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-        const response = await fetch("http://localhost:8082/api/debug/technician/repairs/all", {
+        // Pobranie wszystkich zgłoszeń technika
+        const response = await fetch("http://localhost:8082/api/technician/repairs/all", {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -205,17 +207,30 @@ async function loadRepairs() {
         if (!response.ok) return;
 
         const repairs = await response.json();
+
+        // Tworzy tabelę
         let html = `<h3>Lista zgłoszeń:</h3>
             <table border="1" cellpadding="5" cellspacing="0">
                 <thead><tr><th>ID</th><th>Model</th><th>Status</th><th>Akcje</th></tr></thead>
                 <tbody>`;
 
         repairs.forEach(r => {
+            // domyślnie przycisk Edytuj
+            let actions = `<button type="button" onclick="editRepair(${r.id})">Edytuj</button>`;
+
+            // jeśli status = DONE - dodatkowe przyciski
+            if (r.status === "DONE") {
+                actions += `
+                    <button type="button" onclick="downloadPdf(${r.id})">Pobierz PDF</button>
+                    <button type="button" onclick="sendEmail(${r.id})">Wyślij email</button>
+                `;
+            }
+
             html += `<tr>
                         <td>${r.id}</td>
                         <td>${r.deviceModel?.modelName || "brak"}</td>
                         <td>${r.status}</td>
-                        <td><button type="button" onclick="editRepair(${r.id})">Edytuj</button></td>
+                        <td>${actions}</td>
                     </tr>`;
         });
 
@@ -227,6 +242,7 @@ async function loadRepairs() {
     }
 }
 
+// Otwieranie modala z edycją zgłoszenia
 async function editRepair(id) {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -240,7 +256,7 @@ async function editRepair(id) {
 
         const repair = await response.json();
 
-        // Tworzy modal
+        // Tworzymy modal z danymi
         const modal = document.createElement("div");
         modal.className = "modal";
         modal.id = "dynamic-modal";
@@ -260,13 +276,16 @@ async function editRepair(id) {
                     <option value="IN_PROGRESS" ${repair.status === "IN_PROGRESS" ? "selected" : ""}>IN_PROGRESS</option>
                     <option value="DONE" ${repair.status === "DONE" ? "selected" : ""}>DONE</option>
                 </select>
-                <button id="save-repair-btn">💾 Zapisz zmiany</button>
+                <button id="save-repair-btn"> Zapisz zmiany</button>
             </div>
         `;
 
         document.body.appendChild(modal);
 
+        // zamykanie modala
         modal.querySelector(".close").addEventListener("click", () => modal.remove());
+
+        // zapis zmian
         modal.querySelector("#save-repair-btn").addEventListener("click", async () => {
             await saveRepairDynamic(repair.id);
             modal.remove();
@@ -278,6 +297,7 @@ async function editRepair(id) {
     }
 }
 
+// Zapis zmian opisu/statusu technika
 async function saveRepairDynamic(id) {
     const token = localStorage.getItem("token");
     const description = document.getElementById("repair-description").value;
@@ -295,6 +315,47 @@ async function saveRepairDynamic(id) {
         console.error(err);
     }
 }
+
+// Pobieranie PDF z backendu
+async function downloadPdf(repairId) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+        const response = await fetch(`http://localhost:8082/api/technician/repairs/${repairId}/report-pdf`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            alert("Błąd przy pobieraniu PDF: " + response.status);
+            return;
+        }
+
+        // Zamiana odpowiedzi na plik i pobranie
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `repair-report-${repairId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+        console.error("Błąd sieci przy pobieraniu PDF:", err);
+    }
+}
+
+// Na razie tylko placeholder - wysyłanie maila z backendu do zrobienia
+async function sendEmail(repairId) {
+    alert("Funkcja wysyłki email zostanie dodana później. Wywołano dla zgłoszenia ID: " + repairId);
+}
+
+
+
 
 // ================== ROLE HANDLING ==================
 
